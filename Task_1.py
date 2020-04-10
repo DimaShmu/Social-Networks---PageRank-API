@@ -15,6 +15,13 @@ def load_graph(path):
     :param path: path of the csv file
     :return: None
     """
+    import pandas as pd
+    import numpy as np
+
+    df = pd.read_csv(string(path), names=['source', 'dest'])
+    source_to_dest_dict = df.applymap(str).groupby('source')['dest'].apply(list).to_dict()  # src points to dest
+    dest_to_source_dict = df.applymap(str).groupby('dest')['source'].apply(list).to_dict()  #dest who are pointing at the source
+
     
 def calculate_page_rank(beta=0.85, epsilon=0.001, maxIterations=20):
     """
