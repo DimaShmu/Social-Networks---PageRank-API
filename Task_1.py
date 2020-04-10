@@ -7,6 +7,9 @@ Created on Fri Apr 10 12:30:46 2020
 
 import pandas as pd
 import numpy as np
+import operator
+import heapq
+from statistics import mean
 
 class graph:
     
@@ -15,6 +18,7 @@ class graph:
         self.source_to_dest_dict = {}
         self.dest_to_source_dict = {}
         self.page_rank = {}
+        self.cc = {}
         
         
     def load_graph(self, path):
@@ -49,6 +53,12 @@ class graph:
         :return: The PageRank of the given node name 
         :rtype: double
         """
+        if node_name in self.page_rank:
+            return self.page_rank[node_name]
+        else:
+            return -1
+        
+        
         
     def get_top_PageRank(self, n):
         """
@@ -58,6 +68,8 @@ class graph:
         :return: List of pairs:<node name, PageRank value >
         :rtype: list.
         """
+        return heapq.nlargest(n, self.page_rank.items(), key=lambda i: i[1])
+            
     
     def get_all_PageRank(self):
         """
@@ -66,7 +78,8 @@ class graph:
         The list should be ordered according to the PageRank values from high to low
         :params: None
         :return: List of pairs:<node name, PageRank value >
-        """    
+        """
+        return sorted(self.page_rank.items(), key=lambda x: x[1], reverse=True)
         
     def calcuate_CC(self):
         """
@@ -74,6 +87,19 @@ class graph:
         :param: None
         :return: None
         """
+        s2d = max(self.source_to_dest_dict.keys(), key=lambda x: int(x))
+        d2s = max(self.dest_to_source_dict.keys(), key=lambda x: int(x))
+        maxNode = max(s2d, d2s)
+        
+        for i in range(1, maxNode+1):
+            e = len(self.source_to_dest_dict[i]) + len(self.dest_to_source_dict[i])
+            r = len(set(self.source_to_dest_dict[i]) & set(self.dest_to_source_dict[i]))
+            if(r == 0 or r == 1):
+                self.cc[i] = 0
+            else:
+                self.cc[i] = (e/(abs(r)*(abs(r)-1)))
+        
+    
     
     def get_CC(self, node_name):
         """
@@ -84,6 +110,9 @@ class graph:
         :return: The CC of the given node name
         :rtype: Double
         """
+        return self.cc[node_name]
+
+                
         
     def get_top_CC(self, n):
         """
@@ -92,6 +121,8 @@ class graph:
         :param n: How many nodes
         :return: List of pairs:<node name, CC value >
         """
+        return heapq.nlargest(n, self.cc.items(), key=lambda i: i[1])
+
         
     def get_all_CC(self):
         """
@@ -101,7 +132,8 @@ class graph:
         :param: None
         :return: List of pairs:<node name, CC value >
         """
-    
+        return sorted(self.cc.items(), key=lambda x: x[1], reverse=True)
+
     
     def get_average_CC(self):
         """
@@ -109,4 +141,6 @@ class graph:
         :param: None
         :return: average CC
         """
+        return mean(self.cc[i] for i in self.cc)
+        
         
