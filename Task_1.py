@@ -31,7 +31,7 @@ class graph:
         self.source_to_dest_dict = df.applymap(str).groupby('source')['dest'].apply(list).to_dict()  # src points to dest
         self.dest_to_source_dict = df.applymap(str).groupby('dest')['source'].apply(list).to_dict()  #dest who are pointing at the source
         
-    def calculate_page_rank(self, beta=0.85, epsilon=0.001, maxIterations=20):
+    def calculate_page_rank(self, beta=0.85, delta=0.001, maxIterations=20):
         """
         Calculates the PageRank for each of the nodes in the graph.
         The calculation will end in one of two stop conditions:
@@ -39,10 +39,53 @@ class graph:
         between two iterations is smaller than δ.
         
         :param beta:
-        :param epsilon:
+        :param delta:
         :param maxIterations: 
         :return: None
         """
+        # s2d = {A: [B, C], B:[D], C: [A, B, D], D: [C]}
+    # d2s = {A: [C], B: [A, C], C: [A, D], D: [B, C]}
+    s2d = self.source_to_dest_dict
+    d2s = self.dest_to_source_dict
+    
+    
+    max1 = max(s2d.keys(), key=lambda x: int(x))
+    max2 = max(d2s.keys(), key=lambda x: int(x))
+    N = int(max(max1, max2))
+
+    if N == 0 or N == 1:
+        print("not a valid node realation to run Pagerank")
+        return
+
+    pagerank = np.full((N,maxIterations), 0, dtype="float")
+    for i in range(N):
+        pagerank[i][0] = 1/N
+    temp_pagerank = np.full((N, maxIterations), 0, dtype="float")
+
+    pr_sum = [0]*(len(time)+1)
+    pr_sum[0] = N
+    s=0
+    
+    time = range(1, maxIterations)
+    # The Pagerank algorithm
+    for t in time:
+        for temp_node in d2s.keys():
+            for pr_node in d2s[temp_node]:
+                # r'_j(t)= beta*r_i(t-1)/d_i
+                temp_pagerank[int(temp_node)-1][t] += beta*pagerank[int(pr_node)-1][t-1]/len(s2d[pr_node])
+            s += temp_pagerank[int(temp_node)-1][t]
+        for temp_node in d2s.keys():
+            pagerank[int(temp_node)-1][t] = temp_pagerank[int(temp_node)-1][t] + (1 - s)/N
+            pr_sum[t] += pagerank[int(temp_node)-1][t]
+        if abs(pr_sum[t]-pr_sum[t-1])<delta:
+            print("We have reached less then delta = ",delta ," and after ",t ," iterations.\n Pagerank scores achieved.")
+            for i in range(N):
+                self.page_rank.update({str(i): pagerank[i][t]})
+            break
+        s = 0
+
+    # print("Pagerank algorithm is done")
+        
         
     
     def get_PageRank(self, node_name):
