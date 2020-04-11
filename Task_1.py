@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sat Apr 11 11:12:15 2020
+
+@author: dima
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Fri Apr 10 12:30:46 2020
 
 @author: Dima & Sagi
@@ -44,49 +51,49 @@ class graph:
         :return: None
         """
         # s2d = {A: [B, C], B:[D], C: [A, B, D], D: [C]}
-    # d2s = {A: [C], B: [A, C], C: [A, D], D: [B, C]}
-    s2d = self.source_to_dest_dict
-    d2s = self.dest_to_source_dict
-    
-    
-    max1 = max(s2d.keys(), key=lambda x: int(x))
-    max2 = max(d2s.keys(), key=lambda x: int(x))
-    N = int(max(max1, max2))
-
-    if N == 0 or N == 1:
-        print("not a valid node realation to run Pagerank")
-        return
-
-    pagerank = np.full((N,maxIterations), 0, dtype="float")
-    for i in range(N):
-        pagerank[i][0] = 1/N
-    temp_pagerank = np.full((N, maxIterations), 0, dtype="float")
-
-    pr_sum = [0]*(len(time)+1)
-    pr_sum[0] = N
-    s=0
-    
-    time = range(1, maxIterations)
-    # The Pagerank algorithm
-    for t in time:
-        for temp_node in d2s.keys():
-            for pr_node in d2s[temp_node]:
-                # r'_j(t)= beta*r_i(t-1)/d_i
-                temp_pagerank[int(temp_node)-1][t] += beta*pagerank[int(pr_node)-1][t-1]/len(s2d[pr_node])
-            s += temp_pagerank[int(temp_node)-1][t]
-        for temp_node in d2s.keys():
-            pagerank[int(temp_node)-1][t] = temp_pagerank[int(temp_node)-1][t] + (1 - s)/N
-            pr_sum[t] += pagerank[int(temp_node)-1][t]
-        if abs(pr_sum[t]-pr_sum[t-1])<delta:
-            print("We have reached less then delta = ",delta ," and after ",t ," iterations.\n Pagerank scores achieved.")
-            for i in range(N):
-                self.page_rank.update({str(i): pagerank[i][t]})
-            break
-        s = 0
-
-    # print("Pagerank algorithm is done")
+        # d2s = {A: [C], B: [A, C], C: [A, D], D: [B, C]}
+        s2d = self.source_to_dest_dict
+        d2s = self.dest_to_source_dict
         
         
+        max1 = max(s2d.keys(), key=lambda x: int(x))
+        max2 = max(d2s.keys(), key=lambda x: int(x))
+        N = int(max(max1, max2))
+    
+        if N == 0 or N == 1:
+            print("not a valid node realation to run Pagerank")
+            return
+    
+        pagerank = np.full((N,maxIterations), 0, dtype="float")
+        for i in range(N):
+            pagerank[i][0] = 1/N
+        temp_pagerank = np.full((N, maxIterations), 0, dtype="float")
+        time = range(1, maxIterations)
+        pr_sum = [0]*(len(time)+1)
+        pr_sum[0] = N
+        s=0
+        
+
+        # The Pagerank algorithm
+        for t in time:
+            for temp_node in d2s.keys():
+                for pr_node in d2s[temp_node]:
+                    # r'_j(t)= beta*r_i(t-1)/d_i
+                    temp_pagerank[int(temp_node)-1][t] += beta*pagerank[int(pr_node)-1][t-1]/len(s2d[pr_node])
+                s += temp_pagerank[int(temp_node)-1][t]
+            for temp_node in d2s.keys():
+                pagerank[int(temp_node)-1][t] = temp_pagerank[int(temp_node)-1][t] + (1 - s)/N
+                pr_sum[t] += pagerank[int(temp_node)-1][t]
+            if abs(pr_sum[t]-pr_sum[t-1])<delta:
+                print("We have reached less then delta = ",delta ," and after ",t ," iterations.\n Pagerank scores achieved.")
+                for i in range(N):
+                    self.page_rank.update({str(i): pagerank[i][t]})
+                break
+            s = 0
+    
+        # print("Pagerank algorithm is done")
+            
+            
     
     def get_PageRank(self, node_name):
         """
@@ -129,19 +136,25 @@ class graph:
         Calculates the (undirected) clustering coefficient of each of the nodes in the graph
         :param: None
         :return: None
-        """
+       ּ
         s2d = max(self.source_to_dest_dict.keys(), key=lambda x: int(x))
         d2s = max(self.dest_to_source_dict.keys(), key=lambda x: int(x))
-        maxNode = max(s2d, d2s)
-        
-        for i in range(1, maxNode+1):
-            e = len(self.source_to_dest_dict[i]) + len(self.dest_to_source_dict[i])
-            r = len(set(self.source_to_dest_dict[i]) & set(self.dest_to_source_dict[i]))
-            if(r == 0 or r == 1):
-                self.cc[i] = 0
+        maxNode = int(max(s2d, d2s))
+         """
+        for i in self.source_to_dest_dict.keys():
+            e1 = len(self.source_to_dest_dict[str(i)])
+            r1 = set(self.source_to_dest_dict[str(i)])
+            try:
+                e = e1 + len(self.dest_to_source_dict[str(i)])
+                r = len(r1.union(set(self.dest_to_source_dict[str(i)])))
+            except:
+                 self.cc[str(i)] = 0
             else:
-                self.cc[i] = (e/(abs(r)*(abs(r)-1)))
+                self.cc[str(i)] = float(e/(abs(r)*(abs(r)-1)))
+            
         
+
+
     
     
     def get_CC(self, node_name):
