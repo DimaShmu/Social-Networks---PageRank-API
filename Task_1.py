@@ -137,20 +137,25 @@ class graph:
         :param: None
         :return: None
        ּ
-        s2d = max(self.source_to_dest_dict.keys(), key=lambda x: int(x))
-        d2s = max(self.dest_to_source_dict.keys(), key=lambda x: int(x))
-        maxNode = int(max(s2d, d2s))
+
          """
+         
         for i in self.source_to_dest_dict.keys():
             e1 = len(self.source_to_dest_dict[str(i)])
             r1 = set(self.source_to_dest_dict[str(i)])
+
             try:
                 e = e1 + len(self.dest_to_source_dict[str(i)])
                 r = len(r1.union(set(self.dest_to_source_dict[str(i)])))
             except:
-                 self.cc[str(i)] = 0
-            else:
-                self.cc[str(i)] = float(e/(abs(r)*(abs(r)-1)))
+                 e = e1
+                 r = len(r1)
+            finally:
+                if(r == 1 or r == 0): self.cc[str(i)] = 0
+                else:
+
+                    self.cc[str(i)] = float(e/(abs(r)*(abs(r)-1)))
+                
             
         
 
