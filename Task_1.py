@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr 11 11:12:15 2020
-
-@author: dima
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Fri Apr 10 12:30:46 2020
 
 @author: Dima & Sagi
@@ -152,9 +145,8 @@ class graph:
                  r = len(r1)
             finally:
                 if(r == 1 or r == 0): self.cc[str(i)] = 0
-                else:
-
-                    self.cc[str(i)] = float(e/(abs(r)*(abs(r)-1)))
+                else: self.cc[str(i)] = float(e/(abs(r)*(abs(r)-1)))
+                    
                 
             
         
