@@ -166,7 +166,8 @@ class graph:
         """
         return sorted(self.page_rank.items(), key=lambda x: x[1], reverse=True)
         
-        def calcuate_CC(self):
+        
+    def calcuate_CC(self):
         """
         Calculates the (undirected) clustering coefficient of each of the nodes in the graph
         :param: None
@@ -205,12 +206,14 @@ class graph:
         set2 = set(d2s.keys())
         allNodes = set1.union(set2)
         N = len(allNodes)
-        print("Number of nodes:", N)
-        et = 0
+        # print("Number of nodes:", N)
+        ei = 0.0
+
+
         connections = set()
-        resDict = {}
         for node in allNodes:
-            print("This is  node:", node)
+
+            # print("This is  node:", node)
             try:
                 outNeigh = set(s2d[node])
             except:
@@ -220,31 +223,33 @@ class graph:
             except:
                 inNeigh = set()
             neighbors = outNeigh.union(inNeigh)
-            print("Those are his neighbors:", neighbors)
+            # print("Those are his neighbors:", neighbors)
             for neigh in neighbors:  # for each neighbor
-                print("Neighbor is:", neigh)
+                # print("Neighbor is:", neigh)
                 if d2s.get(neigh):
                     for incoming in d2s[neigh]:  # for all the incoming neighbors of the neghibor
                         if incoming == node:
                             continue
-                        if not neighbors.__contains__(incoming):  # if incoming node is also v_i neighbor
+                        if neighbors.__contains__(incoming):  # if incoming node is also v_i neighbor
                             if not connections.__contains__((incoming, neigh)):  # if edge isn't listed yet
                                 connections.add((incoming, neigh))
                 if s2d.get(neigh):
-                    for outcoming in d2s[neigh]:  # for all the outcoming neighbors of the neghibor
+                    for outcoming in s2d[neigh]:  # for all the outcoming neighbors of the neghibor
                         if outcoming == node:
                             continue
-                        if not neighbors.__contains__(outcoming):  # if outcoming node is also v_i neighbor
+                        if neighbors.__contains__(outcoming):  # if outcoming node is also v_i neighbor
                             if not connections.__contains__((neigh, outcoming)):
                                 connections.add((neigh, outcoming))
-                print(connections)
+                # print(connections)
             ei = len(connections)
             r1 = len(neighbors)
-            ci = ei / (r1 * (r1 - 1))
+            if r1 == 1 or r1 == 0:
+                ci = 0.0
+            else:
+                ci = ei / (r1 * (r1 - 1))
             self.cc.update({node: ci})
             ####### This is where to calculate CC euquation
-
-        print(len(connections))
+            connections = set()
 
                 
             
